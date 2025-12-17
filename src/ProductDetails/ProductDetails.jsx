@@ -1,14 +1,24 @@
-import React, { use, useRef } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 import { AuthContext } from "../contexts/AuthContext";
 import Swal from "sweetalert2";
 
 const ProductDetails = () => {
-  const product = useLoaderData();
+  // const product = useLoaderData();
   const { _id: productId } = useLoaderData();
+  const [bids, setBids] = useState([])
   const bidModalRef = useRef(null);
   const { user } = use(AuthContext);
   // console.log(product);
+
+   useEffect(() => {
+        fetch(`http://localhost:3000/products/bids/${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log('bids for this product', data)
+                setBids(data);
+            })
+    }, [productId])
 
   const handleBidModalOpen = () => {
     bidModalRef.current.showModal();
@@ -118,6 +128,9 @@ const ProductDetails = () => {
         </div>
       </div>
       {/* bids for this product */}
+      <div>
+        <h3 className="text-3xl">Bid for this Product: <span className="text-primary">{bids.length}</span></h3>
+      </div>
     </div>
   );
 };
